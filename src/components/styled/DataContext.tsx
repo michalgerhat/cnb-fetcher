@@ -7,19 +7,24 @@ interface IDataContext {
 }
 
 const defaultState: IDataContext = {
-    plainTextData: ""
+    plainTextData: "Loading..."
 }
 
 export const DataContext = createContext<IDataContext>(defaultState);
 
 export const DataContextProvider: FC = ({children}) => {
-    const [plainTextData, setPlainTextData] = useState("");
+    const [plainTextData, setPlainTextData] = useState(defaultState.plainTextData);
 
     const { isLoading, error, data } = useQuery('repoData', () => {
         fetch('/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt')
             .then(res => res.text())
             .then(res => setPlainTextData(res));
     });
+
+    if (error) {
+        console.log(error);
+        error instanceof Error && setPlainTextData("Error: " + error.message);
+    }
 
     return (
         <DataContext.Provider
