@@ -1,7 +1,11 @@
 import React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
 import { GlobalStyles } from './components/styled/Global';
 import { Container } from './components/styled/Container.styled';
+import { DataContextConsumer, DataContextProvider } from './components/styled/DataContext';
+
+const queryClient = new QueryClient();
 
 const theme: DefaultTheme = {
     colors: {
@@ -14,10 +18,18 @@ const theme: DefaultTheme = {
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <GlobalStyles />
-            <Container>
-                Hello world!
-            </Container>
+            <QueryClientProvider client={queryClient}>
+                <DataContextProvider>
+                    <GlobalStyles />
+                    <Container>
+                        <DataContextConsumer>
+                            {({plainTextData}) => (
+                                <p>{plainTextData}</p>
+                            )}
+                        </DataContextConsumer>
+                    </Container>
+                </DataContextProvider>
+            </QueryClientProvider>
         </ThemeProvider>
     );
 }
